@@ -18,26 +18,26 @@ void reader_do(void *arg) {
 void *reader1(void *arg) {
     int reader_id = 1;
     ConCurrentSet *set = (ConCurrentSet *)arg;
-    current_set_query_and_do(set, &data[0], reader_do, &reader_id);
+    concurrent_set_query_and_do(set, &data[0], reader_do, &reader_id);
 }
 
 void *reader2(void *arg) {
     int reader_id = 2;
     ConCurrentSet *set = (ConCurrentSet *)arg;
-    current_set_query_and_do(set, &data[1], reader_do, &reader_id);
+    concurrent_set_query_and_do(set, &data[1], reader_do, &reader_id);
 }
 
 void *reader3(void *arg) {
     int reader_id = 3;
     ConCurrentSet *set = (ConCurrentSet *)arg;
-    current_set_query_and_do(set, &data[5], reader_do, &reader_id);
+    concurrent_set_query_and_do(set, &data[5], reader_do, &reader_id);
 }
 
 void *writer1(void *arg) {
     ConCurrentSet *set = (ConCurrentSet *)arg;
 
     fprintf(stderr, "before writer 1\n");
-    current_set_insert(set, &data[2]);
+    concurrent_set_insert(set, &data[2]);
     fprintf(stderr, "after writer 1\n");
 }
 
@@ -45,20 +45,20 @@ void *writer2(void *arg) {
     ConCurrentSet *set = (ConCurrentSet *)arg;
 
     fprintf(stderr, "before writer 2\n");
-    current_set_remove(set, &data[0]);
+    concurrent_set_remove(set, &data[0]);
     fprintf(stderr, "after writer 2\n");
 }
 
 void run_test() {
-    ConCurrentSet *set = current_set_new(int_hash, int_equal);
+    ConCurrentSet *set = concurrent_set_new(int_hash, int_equal);
     if (set == NULL) {
         fprintf(stdout, "new set failed\n");
         return ;
     }
     fprintf(stdout, "new set ok\n");
 
-    current_set_insert(set, &data[0]);
-    current_set_insert(set, &data[1]);
+    concurrent_set_insert(set, &data[0]);
+    concurrent_set_insert(set, &data[1]);
 
     pthread_t tid[5];
     pthread_create(&tid[0], NULL, reader1, (void *)set);    
@@ -71,9 +71,9 @@ void run_test() {
     pthread_create(&tid[4], NULL, writer2, (void *)set);    
 
     sleep(5);
-    int r1 = current_set_query(set, &data[0]);
-    int r2 = current_set_query(set, &data[1]);
-    int r3 = current_set_query(set, &data[2]);
+    int r1 = concurrent_set_query(set, &data[0]);
+    int r2 = concurrent_set_query(set, &data[1]);
+    int r3 = concurrent_set_query(set, &data[2]);
     fprintf(stdout, "r1 = %d, r2 = %d, r3 = %d.\n", 
                         r1, r2, r3);
 
@@ -81,7 +81,7 @@ void run_test() {
     for (; i < 5; i++) {
         pthread_join(tid[i], NULL);
     }
-    current_set_free(set);
+    concurrent_set_free(set);
 
     fprintf(stdout, "run test finish.\n");
 }

@@ -1,5 +1,5 @@
-#ifndef ALGORITHM_CURRENT_SET_H
-#define ALGORITHM_CURRENT_SET_H
+#ifndef ALGORITHM_concurrent_set_H
+#define ALGORITHM_concurrent_set_H
 
 #include "set.h"
 #include <pthread.h>
@@ -9,14 +9,14 @@ typedef struct _ConCurrentSet {
     pthread_rwlock_t lock;
 }ConCurrentSet;
 
-typedef void (*current_set_query_do)(void *);
+typedef void (*concurrent_set_query_do)(void *);
 
-ConCurrentSet *current_set_new(SetHashFunc hash_func, SetEqualFunc equal_func);
-void current_set_free(ConCurrentSet *set);
-int current_set_insert(ConCurrentSet *set, SetValue data);
-int current_set_query(ConCurrentSet *set, SetValue data);
-void current_set_query_and_do(ConCurrentSet *set, SetValue data, current_set_query_do func, void *args);
-int current_set_remove(ConCurrentSet *set, SetValue data);
+ConCurrentSet *concurrent_set_new(SetHashFunc hash_func, SetEqualFunc equal_func);
+void concurrent_set_free(ConCurrentSet *set);
+int concurrent_set_insert(ConCurrentSet *set, SetValue data);
+int concurrent_set_query(ConCurrentSet *set, SetValue data);
+void concurrent_set_query_and_do(ConCurrentSet *set, SetValue data, concurrent_set_query_do func, void *args);
+int concurrent_set_remove(ConCurrentSet *set, SetValue data);
 
 
 #endif

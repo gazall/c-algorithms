@@ -23,7 +23,7 @@ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 
-ConCurrentSet *current_set_new(SetHashFunc hash_func, SetEqualFunc equal_func) {
+ConCurrentSet *concurrent_set_new(SetHashFunc hash_func, SetEqualFunc equal_func) {
     ConCurrentSet *cs = (ConCurrentSet *)malloc(sizeof(ConCurrentSet)); 
     if (NULL == cs) {
         return NULL;
@@ -41,7 +41,7 @@ ConCurrentSet *current_set_new(SetHashFunc hash_func, SetEqualFunc equal_func) {
     return cs;
 }
 
-void current_set_free(ConCurrentSet *set) {
+void concurrent_set_free(ConCurrentSet *set) {
     if (NULL == set) {
         return ;
     }
@@ -51,7 +51,7 @@ void current_set_free(ConCurrentSet *set) {
     free(set);
 }
 
-int current_set_insert(ConCurrentSet *set, SetValue data) {
+int concurrent_set_insert(ConCurrentSet *set, SetValue data) {
     int ret = 0;
     
     pthread_rwlock_wrlock(&set->lock);
@@ -64,7 +64,7 @@ int current_set_insert(ConCurrentSet *set, SetValue data) {
 /*
 return 1, found. 0, not found.
 */
-int current_set_query(ConCurrentSet *set, SetValue data) {
+int concurrent_set_query(ConCurrentSet *set, SetValue data) {
     int ret;
 
     pthread_rwlock_rdlock(&set->lock);
@@ -74,7 +74,7 @@ int current_set_query(ConCurrentSet *set, SetValue data) {
     return ret;
 }
 
-void current_set_query_and_do(ConCurrentSet *set, SetValue data, current_set_query_do func, void *args) {
+void concurrent_set_query_and_do(ConCurrentSet *set, SetValue data, concurrent_set_query_do func, void *args) {
     if (NULL == func) {
         return ;
     }
@@ -87,7 +87,7 @@ void current_set_query_and_do(ConCurrentSet *set, SetValue data, current_set_que
     pthread_rwlock_unlock(&set->lock);
 }
 
-int current_set_remove(ConCurrentSet *set, SetValue data) {
+int concurrent_set_remove(ConCurrentSet *set, SetValue data) {
     int ret = 0;
 
     pthread_rwlock_wrlock(&set->lock);
